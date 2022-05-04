@@ -63,7 +63,7 @@ def display_widget(pathname):
         blueprint = bp_registry[bp_name]['bp']
     else:
         blueprint = bp_registry[default_bp]['bp']
-    return blueprint.layout()
+    return blueprint._layout_value()
 
 # Register all blueprint callbacks
 for bp in bp_registry.values():
@@ -71,7 +71,7 @@ for bp in bp_registry.values():
 
 app.layout = generate_layout()
 # Prepare the validation layout such that callback registration does not complain
-app.validation_layout = html.Div([generate_layout()] + [bp['bp'].layout() for bp in bp_registry.values()])
+app.validation_layout = html.Div([generate_layout()] + [bp['bp']._layout_value() for bp in bp_registry.values()])
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8080, debug=True,

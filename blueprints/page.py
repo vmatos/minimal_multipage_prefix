@@ -5,6 +5,10 @@ from dash import callback_context, no_update
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
+import time
+import pandas as pd
+import plotly.express as px
+
 def make_blueprint(prefix, title):
     blueprint = DashBlueprint(transforms=[PrefixIdTransform(prefix=prefix)])
 
