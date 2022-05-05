@@ -5,7 +5,9 @@ from dash import dcc, html
 from dash_extensions.enrich import DashProxy, Input, Output
 from dash_extensions.enrich import ServersideOutputTransform
 
-from blueprints import page
+from .blueprints import page
+
+requests_pathname_prefix = '/app2/'
 
 # Create app.
 server = Flask(__name__)
@@ -14,6 +16,7 @@ app = DashProxy(
     server=server, 
     suppress_callback_exceptions=False,
     prevent_initial_callbacks=False,
+    requests_pathname_prefix=requests_pathname_prefix,
     transforms=[
         ServersideOutputTransform(),
     ],
@@ -21,14 +24,14 @@ app = DashProxy(
 )
 
 bp_registry = {}
-bp_registry['page1'] = {'bp': page.make_blueprint('page1', 'Page 1 title'), 'label': 'Page 1', 'path': 'page1'}
-bp_registry['page2'] = {'bp': page.make_blueprint('page2', 'Page 2 title'), 'label': 'Page 2', 'path': 'page2'}
+bp_registry['page1'] = {'bp': page.make_blueprint('page1', 'App2 - Page 1 title'), 'label': 'Page 1', 'path': 'page1'}
+bp_registry['page2'] = {'bp': page.make_blueprint('page2', 'App2 - Page 2 title'), 'label': 'Page 2', 'path': 'page2'}
 default_bp = 'page1'
 
 def generate_navbar():
-    children = []
+    children = [html.H4('App 2')]
     for page in bp_registry.values():
-        children.append(dbc.NavLink(children=page['label'], href=page['path'], active="exact", class_name=''))
+        children.append(dbc.NavLink(children=page['label'], href=requests_pathname_prefix+page['path'], active="exact", class_name=''))
     navbar = dbc.Nav(
             children=children,
             vertical=True,
@@ -58,7 +61,7 @@ def generate_layout():
     Input('url', 'pathname')
 )
 def display_widget(pathname):
-    bp_name = pathname[1:]
+    bp_name = pathname[len(requests_pathname_prefix):]
     if bp_name in bp_registry:
         blueprint = bp_registry[bp_name]['bp']
     else:
